@@ -1,0 +1,25 @@
+project(dummy_sfml_snake)
+
+cmake_minimum_required(VERSION 3.13.0)
+
+add_executable(dummy_sfml_snake)
+
+find_package(SFML 3 COMPONENTS System Window Graphics Network Audio Main REQUIRED)
+
+target_sources(dummy_sfml_snake PRIVATE
+    src/main.cpp
+    src/game_manager.cpp
+)
+
+target_include_directories(dummy_sfml_snake PRIVATE 
+    inc/
+    ${SFML_DIR}/../../../include        # required otherwise can't find SFML headers
+)
+
+target_link_directories(dummy_sfml_snake PRIVATE
+    ${SFML_DIR}/../..       # required otherwise can't find SFML libraries when linking
+)
+
+target_link_libraries (dummy_sfml_snake sfml-audio sfml-graphics sfml-network sfml-system sfml-window)
+
+
