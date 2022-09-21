@@ -59,33 +59,20 @@ void GameManager::ProcessUserInputs()
     sf::Event event;
     while (m_pt_display_window->pollEvent(event))
     {
-        if (event.type == sf::Event::KeyPressed)
+        switch (m_current_screen)
         {
-            switch (event.key.code)
-            {
-                case sf::Keyboard::Up:
-                {
-                    std::cout << "UP pressed" << std::endl;
-                }
-                break;
-                case sf::Keyboard::Down:
-                {
-                    std::cout << "DOWN pressed" << std::endl;
-                }
-                break;
-                case sf::Keyboard::Left:
-                {
-                    std::cout << "LEFT pressed" << std::endl;
-                }
-                break;
-                case sf::Keyboard::Right:
-                {
-                    std::cout << "RIGHT pressed" << std::endl;
-                }
-                break;
-                default:
-                break;
-            }
+        case GameScreen::HOME :
+            ProcessEventHome(event);
+            break;
+        case GameScreen::GAME :
+            ProcessEventGame(event);
+            break;
+        case GameScreen::PAUSE :
+            ProcessEventPause(event);
+            break;
+        
+        default:
+            break;
         }
 
         // "close requested" event: we close the window
@@ -96,6 +83,96 @@ void GameManager::ProcessUserInputs()
     }
 }
 
+
+void GameManager::ProcessEventHome(sf::Event & event)
+{
+    if (event.type == sf::Event::KeyPressed)
+        {
+            switch (event.key.code)
+            {
+                case sf::Keyboard::P:
+                {
+                    m_current_screen = GameScreen::GAME;
+                    // TODO : init game and snake
+                }
+                break;
+                default:
+                break;
+            }
+        }
+}
+
+void GameManager::ProcessEventGame(sf::Event & event)
+{
+    if (event.type == sf::Event::KeyPressed)
+    {
+        switch (event.key.code)
+        {
+            case sf::Keyboard::Up:
+            {
+                std::cout << "UP pressed" << std::endl;
+                // TODO
+            }
+            break;
+            case sf::Keyboard::Down:
+            {
+                std::cout << "DOWN pressed" << std::endl;
+                // TODO
+            }
+            break;
+            case sf::Keyboard::Left:
+            {
+                std::cout << "LEFT pressed" << std::endl;
+                // TODO
+            }
+            break;
+            case sf::Keyboard::Right:
+            {
+                std::cout << "RIGHT pressed" << std::endl;
+                // TODO
+            }
+            break;
+            case sf::Keyboard::P:
+            {
+                std::cout << "Game paused !" << std::endl;
+                m_txt_body = sf::Text("PAUSE \n Press 'P' to resume", m_txt_font, 30);
+                SetTextLocalOrigin(m_txt_body, LocalOrigin::Center);
+                m_txt_body.setPosition(GridPositionToWindowCoordinate((width)/2, (height/2)));
+                m_txt_body.setFillColor(sf::Color(128,0,0));
+
+                m_current_screen = GameScreen::PAUSE;
+            }
+            break;
+            case sf::Keyboard::Enter:
+            {
+                std::cout << "Game Over !" << std::endl;
+                m_txt_title.setString("Game Over !");
+                SetTextLocalOrigin(m_txt_title, LocalOrigin::Top);
+                m_txt_title.setPosition(GridPositionToWindowCoordinate((width)/2, 0));
+
+                m_current_screen = GameScreen::HOME;
+            }
+            break;
+            default:
+            break;
+        }
+    }
+}
+
+void GameManager::ProcessEventPause(sf::Event & event)
+{
+    if (event.type == sf::Event::KeyPressed)
+    {
+        if (event.key.code == sf::Keyboard::P)
+        {
+            m_current_screen = GameScreen::GAME;
+            m_txt_body = sf::Text("Press 'P' to play/pause\nControl with ARROW keys", m_txt_font, 20);
+            SetTextLocalOrigin(m_txt_body, LocalOrigin::Center);
+            m_txt_body.setPosition(GridPositionToWindowCoordinate((width)/2, 10));
+            m_txt_body.setFillColor(sf::Color(128,0,0));
+        }
+    }
+}
 
 void GameManager::UpdateDisplay()
 {
@@ -112,8 +189,23 @@ void GameManager::UpdateDisplay()
 
         if (m_txt_title.getString() == sf::String("Game Over !"))
         {
-            
+            m_pt_display_window->draw(m_txt_score);
         }
+    }
+        break;
+    case GameScreen::GAME :
+    {
+        m_pt_display_window->draw(m_txt_score);
+        // TODO draw grid
+        // TODO draw snake
+    }
+        break;
+    case GameScreen::PAUSE :
+    {
+        m_pt_display_window->draw(m_txt_score);
+        // TODO draw grid
+        // TODO draw snake
+        m_pt_display_window->draw(m_txt_body);
     }
         break;
     

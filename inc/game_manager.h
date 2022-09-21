@@ -45,5 +45,11 @@ public:
      * @note clears the previous window (fill with black)
      */
     void UpdateDisplay();
+
+private:
+    void ProcessEventHome(sf::Event & event);
+    void ProcessEventGame(sf::Event & event);
+    void ProcessEventPause(sf::Event & event);
+
 };
 
