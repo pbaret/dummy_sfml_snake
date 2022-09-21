@@ -45,6 +45,7 @@ GameManager::GameManager(sf::RenderWindow * pt_display_window) :
     m_txt_highscore.setPosition(GridPositionToWindowCoordinate((width - 2), (height - 4)));
     m_txt_highscore.setFillColor(sf::Color(128,255,255));
 
+    m_snake = Snake();
 }
 
 
@@ -102,6 +103,7 @@ void GameManager::ProcessEventHome(sf::Event & event)
         }
 }
 
+
 void GameManager::ProcessEventGame(sf::Event & event)
 {
     if (event.type == sf::Event::KeyPressed)
@@ -134,7 +136,6 @@ void GameManager::ProcessEventGame(sf::Event & event)
             break;
             case sf::Keyboard::P:
             {
-                std::cout << "Game paused !" << std::endl;
                 m_txt_body = sf::Text("PAUSE \n Press 'P' to resume", m_txt_font, 30);
                 SetTextLocalOrigin(m_txt_body, LocalOrigin::Center);
                 m_txt_body.setPosition(GridPositionToWindowCoordinate((width)/2, (height/2)));
@@ -145,7 +146,6 @@ void GameManager::ProcessEventGame(sf::Event & event)
             break;
             case sf::Keyboard::Enter:
             {
-                std::cout << "Game Over !" << std::endl;
                 m_txt_title.setString("Game Over !");
                 SetTextLocalOrigin(m_txt_title, LocalOrigin::Top);
                 m_txt_title.setPosition(GridPositionToWindowCoordinate((width)/2, 0));
@@ -158,6 +158,7 @@ void GameManager::ProcessEventGame(sf::Event & event)
         }
     }
 }
+
 
 void GameManager::ProcessEventPause(sf::Event & event)
 {
@@ -173,6 +174,7 @@ void GameManager::ProcessEventPause(sf::Event & event)
         }
     }
 }
+
 
 void GameManager::UpdateDisplay()
 {

@@ -9,6 +9,8 @@ find_package(SFML 3 COMPONENTS System Window Graphics Network Audio Main REQUIRE
 target_sources(dummy_sfml_snake PRIVATE
     src/main.cpp
     src/game_manager.cpp
+    src/grid.cpp
+    src/snake.cpp
 )
 
 target_include_directories(dummy_sfml_snake PRIVATE 

@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "game_state.h"
+#include "snake.h"
 
 /**
  * @brief Game manager : handles all the application and game logic
@@ -21,6 +22,8 @@ private:
     sf::Text m_txt_footer;      /**< Footer text if needed */
     sf::Text m_txt_score;       /**< Text to display the score */
     sf::Text m_txt_highscore;   /**< Text to display the highscore */
+
+    Snake m_snake;  /**< Snake object player */
 
 public:
     /**
@@ -47,8 +50,25 @@ public:
     void UpdateDisplay();
 
 private:
+    /**
+     * @brief Process an event when currently on home screen
+     * 
+     * @param event : event to process
+     */
     void ProcessEventHome(sf::Event & event);
+    
+    /**
+     * @brief Process an event when currently on game screen
+     * 
+     * @param event : event to process
+     */
     void ProcessEventGame(sf::Event & event);
+    
+    /**
+     * @brief Process an event when currently on pause screen
+     * 
+     * @param event : event to process
+     */
     void ProcessEventPause(sf::Event & event);
 
 };
