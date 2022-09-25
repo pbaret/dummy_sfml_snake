@@ -9,7 +9,7 @@ int main()
 {
     // create the window
     sf::RenderWindow window(sf::VideoMode(sf::Vector2u(scale * width, scale * height)), "Dummy SFML Snake");
-    window.setFramerateLimit(30);    // no framerate limit
+    window.setFramerateLimit(20);    // no framerate limit
 
     GameManager game_manager(&window);
 

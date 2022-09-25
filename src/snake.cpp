@@ -18,7 +18,7 @@ bool Snake::UpdateSnake()
 
     GridCell next_head_position_cell_value = m_pt_grid->operator()(next_head_position);
     if ((next_head_position_cell_value == GridCell::EMPTY) ||
-        ((next_head_position_cell_value == GridCell::SNAKE_BODY) && (next_head_position == current_tail_position)))
+        ((next_head_position_cell_value == GridCell::SNAKE_BODY) && (next_head_position == current_tail_position))) // Handle the case where snake just runs right behind its own tail
     {
         // if future head pos is empty
         // then simple move forward

@@ -27,6 +27,8 @@ private:
     Snake m_snake;  /**< Snake object player */
     Grid m_grid;    /**< Grid where the snake can move */
 
+    uint32_t m_highscore;   /**< Highscore */
+
 public:
     /**
      * @brief Construct a new Game Manager object
@@ -77,6 +79,12 @@ private:
      * @param event : event to process
      */
     void ProcessEventPause(sf::Event & event);
+
+    /**
+     * @brief Load the highest score from local computer
+     * @return uint32_t : the score loaded
+     */
+    uint32_t LoadHighScore();
 
 };
 

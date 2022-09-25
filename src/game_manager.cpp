@@ -17,6 +17,8 @@ GameManager::GameManager(sf::RenderWindow * pt_display_window) :
         std::cerr << "problem with font" << std::endl;
     }
 
+    m_highscore = LoadHighScore();
+
     m_current_screen = GameScreen::HOME;
 
     m_txt_title = sf::Text("Dummy SFML Snake", m_txt_font, 50);
@@ -42,7 +44,7 @@ GameManager::GameManager(sf::RenderWindow * pt_display_window) :
     m_txt_score.setPosition(GridPositionToWindowCoordinate((width-2), 4));
     m_txt_score.setFillColor(sf::Color(128,255,255));
 
-    m_txt_highscore = sf::Text(std::string("Highscore: ") + std::to_string(0), m_txt_font, 20);
+    m_txt_highscore = sf::Text(std::string("Highscore: ") + std::to_string(m_highscore), m_txt_font, 20);
     SetTextLocalOrigin(m_txt_highscore, LocalOrigin::BottomRight);
     m_txt_highscore.setPosition(GridPositionToWindowCoordinate((width - 2), (height - 4)));
     m_txt_highscore.setFillColor(sf::Color(128,255,255));
@@ -174,16 +176,27 @@ void GameManager::ProcessEventPause(sf::Event & event)
 
 void GameManager::UpdateGameState()
 {
-    bool game_over = !m_snake.UpdateSnake();
-
-    if (game_over)
+    if (m_current_screen == GameScreen::GAME)
     {
-        m_txt_title.setString("Game Over !");
-        SetTextLocalOrigin(m_txt_title, LocalOrigin::Top);
-        m_txt_title.setPosition(GridPositionToWindowCoordinate((width)/2, 0));
+        bool game_over = !m_snake.UpdateSnake();
+        const uint32_t current_score = m_snake.GetCurrentScore();
+        m_txt_score.setString(sf::String(std::to_string(current_score)));
 
-        m_current_screen = GameScreen::HOME;
-    }
+        if (game_over)
+        {
+            if (current_score > m_highscore)
+            {
+                m_highscore = current_score;
+                m_txt_highscore.setString(sf::String(std::string("Highscore: ") + std::to_string(m_highscore)));
+                // TODO save highscore to disk
+            }
+            m_txt_title.setString("Game Over !");
+            SetTextLocalOrigin(m_txt_title, LocalOrigin::Top);
+            m_txt_title.setPosition(GridPositionToWindowCoordinate((width)/2, 0));
+
+            m_current_screen = GameScreen::HOME;
+        }
+    }    
 }
 
 void GameManager::UpdateDisplay()
@@ -207,9 +220,9 @@ void GameManager::UpdateDisplay()
         break;
     case GameScreen::GAME :
     {
-        m_pt_display_window->draw(m_txt_score);
         m_grid.DrawFoodItem(*m_pt_display_window);
         m_snake.DrawSnake(*m_pt_display_window);
+        m_pt_display_window->draw(m_txt_score);
     }
         break;
     case GameScreen::PAUSE :
@@ -226,4 +239,11 @@ void GameManager::UpdateDisplay()
     }
 
     m_pt_display_window->display();
+}
+
+
+uint32_t GameManager::LoadHighScore()
+{
+    // TODO
+    return 0;
 }

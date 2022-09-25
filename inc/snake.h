@@ -42,6 +42,13 @@ public:
      */
     void DrawSnake(sf::RenderWindow & window);
 
+    /**
+     * @brief Get the Current Score which is directly related to the length of the snake
+     * 
+     * @return uint32_t 
+     */
+    uint32_t GetCurrentScore() const { return static_cast<uint32_t>(m_snake_body_pos.size() - 1); }
+
 private:
     /**
      * @brief Find the next position of the head of the snake (which depend on the current position and the movement direction)
