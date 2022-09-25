@@ -5,6 +5,7 @@
 
 #include "game_state.h"
 #include "snake.h"
+#include "grid.h"
 
 /**
  * @brief Game manager : handles all the application and game logic
@@ -24,6 +25,7 @@ private:
     sf::Text m_txt_highscore;   /**< Text to display the highscore */
 
     Snake m_snake;  /**< Snake object player */
+    Grid m_grid;    /**< Grid where the snake can move */
 
 public:
     /**
@@ -42,6 +44,11 @@ public:
      * @brief Process all the user inputs and events (Keyboard, mouse, window close etc...)
      */
     void ProcessUserInputs();
+
+    /**
+     * @brief Update the state of the game
+     */
+    void UpdateGameState();
 
     /**
      * @brief Update display by rendering a full frame

@@ -2,50 +2,63 @@
 
 using namespace dss;
 
-Snake::Snake()
+
+Snake::Snake(Grid * game_grid) :m_pt_grid(game_grid)
 {
     const sf::Vector2u initial_position = sf::Vector2u(width/2, height/2);        
     m_snake_body_pos.push_back(initial_position);
     m_current_direction = Direction::UP;
 }
 
-/*
-void Snake::SetDirection(Direction new_dir)
+
+bool Snake::UpdateSnake()
 {
-    if (new_dir == m_current_direction)
+    const auto current_tail_position = m_snake_body_pos.back();
+    auto next_head_position = _FindNextHeadPosition();
+
+    GridCell next_head_position_cell_value = m_pt_grid->operator()(next_head_position);
+    if ((next_head_position_cell_value == GridCell::EMPTY) ||
+        ((next_head_position_cell_value == GridCell::SNAKE_BODY) && (next_head_position == current_tail_position)))
     {
-        return;
+        // if future head pos is empty
+        // then simple move forward
+        const sf::Vector2u tail_pos = m_snake_body_pos.back(); // get current postion of tail
+
+        m_snake_body_pos.pop_back();                          // rm tail position
+        m_pt_grid->SetGridCell(tail_pos, GridCell::EMPTY);    // set tail grid cell empty        
     }
-    if ((m_current_direction == Direction::DOWN) || (m_current_direction == Direction::UP))
+    else if (next_head_position_cell_value == GridCell::SNAKE_BODY)
     {
-        if ((new_dir == Direction::LEFT) || (new_dir == Direction::RIGHT))
+        // if future head pos contains snake body, then game over
+        // loose
+        return false;
+    }
+    else // GridCell::Food
+    {
+        // If food, don't rm tail, but still move head forward
+        // As food will be eaten, we need to drop new food item
+
+        if (m_snake_body_pos.size() == (dss::height * dss::width - 1))
         {
-            m_current_direction = new_dir;
+            return false;   // Grid is full
+        }
+        else
+        {
+            m_pt_grid->DropFood(); // drop new food
         }
     }
-    else
-    {
-        if ((new_dir == Direction::UP) || (new_dir == Direction::DOWN))
-        {
-            m_current_direction = new_dir;
-        }
-    }
+    
+    // move forward
+    m_snake_body_pos.push_front(next_head_position);
+    m_pt_grid->SetGridCell(next_head_position, GridCell::SNAKE_BODY);
+    return true;
 }
 
-/*   
-void Snake::DrawSnakeOnWindow(sf::RenderWindow & window)
-{
-    window.clear(sf::Color::Black);
-    for (auto& body_part : m_snake_body)
-    {        
-        body_part.setFillColor(sf::Color(150, 50, 250));
-        window.draw(body_part);
-    }
-}
 
-bool Snake::Move(Grid & grid, sf::RenderWindow & window)
+sf::Vector2u Snake::_FindNextHeadPosition()
 {
     sf::Vector2u current_head_pos = m_snake_body_pos.front();
+
     uint32_t future_x = current_head_pos.x;
     uint32_t future_y = current_head_pos.y;
 
@@ -104,36 +117,41 @@ bool Snake::Move(Grid & grid, sf::RenderWindow & window)
         break;
     }
 
-    sf::CircleShape tmp     = m_snake_body.back();      // Former tail shape
-    sf::Vector2u tmp_pos    = sf::Vector2u(future_x, future_y); // position in front of snake head (future head position)
-    tmp.setPosition(GridPositionToWindowCoordinate(tmp_pos)); // set new shape to future head position
+    return sf::Vector2u(future_x, future_y);
+}
 
-    GridCell front_cell = grid(tmp_pos);
-    if (front_cell == GridCell::EMPTY)
+
+void Snake::DrawSnake(sf::RenderWindow & window)
+{
+    sf::CircleShape shape = sf::CircleShape(scale/2, 15);
+    shape.setFillColor(snake_color);
+
+    for (const auto & pos : m_snake_body_pos)
     {
-        // if future head pos is empty
-        // then simple move forward
-        const sf::Vector2u tail_pos = m_snake_body_pos.back(); // get current postion of tail
-        m_snake_body.pop_back();                               // rm tail shape
-        m_snake_body_pos.pop_back();                           // rm tail position
-        grid.SetGridCell(tail_pos, GridCell::EMPTY);           // set tail grid cell empty        
+        shape.setPosition(ToFloatVector(pos, scale));
+        window.draw(shape);
     }
-    else if (front_cell == GridCell::SNAKE_BODY)
+}
+
+
+void Snake::ChangeDirection(Direction new_dir)
+{
+    if (new_dir == m_current_direction)
     {
-        // if future head pos contains snake body, then game over
-        // loose
-        return false;
+        return;
+    }
+    if ((m_current_direction == Direction::DOWN) || (m_current_direction == Direction::UP))
+    {
+        if ((new_dir == Direction::LEFT) || (new_dir == Direction::RIGHT))
+        {
+            m_current_direction = new_dir;
+        }
     }
     else
     {
-        // If food, don't rm tail, but still move head forward
-        grid.DropFood(); // drop new food
+        if ((new_dir == Direction::UP) || (new_dir == Direction::DOWN))
+        {
+            m_current_direction = new_dir;
+        }
     }
-    
-    // move forward
-    m_snake_body.push_front(tmp);
-    m_snake_body_pos.push_front(tmp_pos);
-    grid.SetGridCell(tmp_pos, GridCell::SNAKE_BODY);
-    return true;
 }
-*/

@@ -94,6 +94,21 @@ namespace dss
 
         txt.setOrigin(new_anchor);
     }
+
+    /**
+     * @brief Convert from unsigned int vector to float vector with optional scaling
+     * 
+     * @param v : input unsigned int vector
+     * @param scale : optional scaling factor (default is 1 : no scaling)
+     * @return sf::Vector2f : output float vector
+     */
+    inline sf::Vector2f ToFloatVector(const sf::Vector2u & v, uint32_t scale = 1)
+    {
+        return sf::Vector2f(static_cast<float>(scale * v.x), static_cast<float>(scale * v.y));
+    }
+
+    constexpr sf::Color food_color = sf::Color(200, 10, 10);    /**< Display Color of food item */
+    constexpr sf::Color snake_color = sf::Color(0, 200, 10);    /**< Display Color of snake */
 }
 
 

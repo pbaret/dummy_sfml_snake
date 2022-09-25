@@ -32,3 +32,12 @@ void Grid::DropFood()
         }
     }
 }
+
+void Grid::DrawFoodItem(sf::RenderWindow & window)
+{
+    sf::CircleShape shape = sf::CircleShape(scale/2, 15);
+    shape.setFillColor(food_color);
+    shape.setPosition(ToFloatVector(m_food_pos, scale));
+
+    window.draw(shape);
+}

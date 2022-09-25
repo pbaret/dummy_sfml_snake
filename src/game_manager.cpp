@@ -8,7 +8,9 @@
 using namespace dss;
 
 GameManager::GameManager(sf::RenderWindow * pt_display_window) :
-    m_pt_display_window(pt_display_window)
+    m_pt_display_window(pt_display_window),
+    m_grid(),
+    m_snake(&m_grid)
 {
     if (!m_txt_font.loadFromMemory(&arial_ttf, arial_ttf_len))
     {
@@ -44,8 +46,6 @@ GameManager::GameManager(sf::RenderWindow * pt_display_window) :
     SetTextLocalOrigin(m_txt_highscore, LocalOrigin::BottomRight);
     m_txt_highscore.setPosition(GridPositionToWindowCoordinate((width - 2), (height - 4)));
     m_txt_highscore.setFillColor(sf::Color(128,255,255));
-
-    m_snake = Snake();
 }
 
 
@@ -94,7 +94,9 @@ void GameManager::ProcessEventHome(sf::Event & event)
                 case sf::Keyboard::P:
                 {
                     m_current_screen = GameScreen::GAME;
-                    // TODO : init game and snake
+                    m_grid.ResetGrid();
+                    m_grid.DropFood();
+                    m_snake = Snake(&m_grid);
                 }
                 break;
                 default:
@@ -113,25 +115,29 @@ void GameManager::ProcessEventGame(sf::Event & event)
             case sf::Keyboard::Up:
             {
                 std::cout << "UP pressed" << std::endl;
-                // TODO
+                m_snake.ChangeDirection(Direction::UP);
+                m_snake.UpdateSnake();
             }
             break;
             case sf::Keyboard::Down:
             {
                 std::cout << "DOWN pressed" << std::endl;
-                // TODO
+                m_snake.ChangeDirection(Direction::DOWN);
+                m_snake.UpdateSnake();
             }
             break;
             case sf::Keyboard::Left:
             {
                 std::cout << "LEFT pressed" << std::endl;
-                // TODO
+                m_snake.ChangeDirection(Direction::LEFT);
+                m_snake.UpdateSnake();
             }
             break;
             case sf::Keyboard::Right:
             {
                 std::cout << "RIGHT pressed" << std::endl;
-                // TODO
+                m_snake.ChangeDirection(Direction::RIGHT);
+                m_snake.UpdateSnake();
             }
             break;
             case sf::Keyboard::P:
@@ -142,15 +148,6 @@ void GameManager::ProcessEventGame(sf::Event & event)
                 m_txt_body.setFillColor(sf::Color(128,0,0));
 
                 m_current_screen = GameScreen::PAUSE;
-            }
-            break;
-            case sf::Keyboard::Enter:
-            {
-                m_txt_title.setString("Game Over !");
-                SetTextLocalOrigin(m_txt_title, LocalOrigin::Top);
-                m_txt_title.setPosition(GridPositionToWindowCoordinate((width)/2, 0));
-
-                m_current_screen = GameScreen::HOME;
             }
             break;
             default:
@@ -175,6 +172,19 @@ void GameManager::ProcessEventPause(sf::Event & event)
     }
 }
 
+void GameManager::UpdateGameState()
+{
+    bool game_over = !m_snake.UpdateSnake();
+
+    if (game_over)
+    {
+        m_txt_title.setString("Game Over !");
+        SetTextLocalOrigin(m_txt_title, LocalOrigin::Top);
+        m_txt_title.setPosition(GridPositionToWindowCoordinate((width)/2, 0));
+
+        m_current_screen = GameScreen::HOME;
+    }
+}
 
 void GameManager::UpdateDisplay()
 {
@@ -198,15 +208,15 @@ void GameManager::UpdateDisplay()
     case GameScreen::GAME :
     {
         m_pt_display_window->draw(m_txt_score);
-        // TODO draw grid
-        // TODO draw snake
+        m_grid.DrawFoodItem(*m_pt_display_window);
+        m_snake.DrawSnake(*m_pt_display_window);
     }
         break;
     case GameScreen::PAUSE :
     {
         m_pt_display_window->draw(m_txt_score);
-        // TODO draw grid
-        // TODO draw snake
+        m_grid.DrawFoodItem(*m_pt_display_window);
+        m_snake.DrawSnake(*m_pt_display_window);
         m_pt_display_window->draw(m_txt_body);
     }
         break;
